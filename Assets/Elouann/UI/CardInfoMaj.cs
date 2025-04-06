@@ -80,7 +80,7 @@ public class CardInfoMaj : MonoBehaviour
         CardData = DataBase;
         majCard = majcard;
         CardNumber = i;
-        BackgroundTexture = CardData.cards[i].Image;
+        BackgroundTexture = CardData.images[CardNumber];
         FakeStart();
         StartCoroutine(EnterCard());
         

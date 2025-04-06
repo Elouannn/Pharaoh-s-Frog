@@ -9,8 +9,8 @@ public class GoogleSheetImporter : MonoBehaviour
 {
     private string sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd7-nhE-of6k5lJpjj_V85bNFmXq_yJf0FJADRYhZN8y2YcDfb-4xffsyA5HXn8K7JTsyxR5NSCGw7/pub?gid=0&single=true&output=tsv";
     public List<List<string>> tableData = new List<List<string>>();
-    private string baseURL = "https://raw.githubusercontent.com/TON_REPOSITORY/TON_DOSSIER/master/ImagesCartes/"; // URL de ton dossier Git
-    private List<Texture2D> images = new List<Texture2D>(); // Liste pour stocker les images
+    private string baseURL = "https://raw.githubusercontent.com/Elouannn/Pharaoh-s-Frog/main/ImagesCartes/"; // URL de ton dossier Git
+    public List<Texture2D> images = new List<Texture2D>(); // Liste pour stocker les images
 
     public List<CardConfig> cards;
 
@@ -89,12 +89,12 @@ public class GoogleSheetImporter : MonoBehaviour
     }
     IEnumerator DownloadImages()
     {
-        int i = 1;
+        int i = 0;
 
         // Télécharge tant qu'il existe des images avec les noms '1.png', '2.png', '3.png', etc.
         while (true)
         {
-            string imageUrl = baseURL + i + ".png"; // URL de l'image (changer l'extension si nécessaire)
+            string imageUrl = baseURL + i + ".jpg"; // URL de l'image (changer l'extension si nécessaire)
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
 
             // Envoyer la requête
