@@ -1329,6 +1329,7 @@ MonoBehaviour:
   Heart3: {fileID: 1221241417}
   SeeFootSteps: 0
   RefFootsteps: {fileID: 8975752088497644576, guid: f043ef87fdedc52429333605fdc99e91, type: 3}
+  Header: {fileID: 559421930}
 --- !u!4 &1709125183
 Transform:
   m_ObjectHideFlags: 0

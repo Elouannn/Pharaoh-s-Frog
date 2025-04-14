@@ -45,6 +45,11 @@ public class CardInfoMaj : MonoBehaviour
 
     public GameObject TimerObject;
 
+    private bool TimerStarted = false;
+
+    public GameObject timerInstance;
+    public TimerBar NewTimerObject;
+
     private void Start()
     {
         eventActions = new Dictionary<string, Action>
@@ -208,6 +213,10 @@ public class CardInfoMaj : MonoBehaviour
         {
             once = true;
             lockUI = true;
+            if(TimerStarted)
+            {
+                Timer();
+            }
         }
         SpawnText(temptext, Consequence, () => EndLetGoDrag());
     }
@@ -256,6 +265,10 @@ public class CardInfoMaj : MonoBehaviour
         AnimatorStateInfo stateInfo = this.gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
         yield return new WaitForSeconds(1);
         majCard.CreateCard(NextCardIS);
+        if(timerInstance != null)
+        {
+            Destroy(timerInstance);
+        }
         Destroy(this.gameObject);
     }
 
@@ -382,10 +395,31 @@ public class CardInfoMaj : MonoBehaviour
     {
         CardData.SeeFootSteps = true;
     }
+    
     public void Timer()
     {
-        //TimerBar NewTimerObject = Instantiate(TimerObject,transform).GetComponent<TimerBar>();
-        //NewTimerObject.ParentScript = this;
+        if (TimerStarted == false)
+        {
+            timerInstance = Instantiate(TimerObject, CardData.Header.transform);
+            RectTransform timerRect = timerInstance.GetComponent<RectTransform>();
+
+            // Positionnement responsive
+            timerRect.anchorMin = new Vector2(1f, 1f); // coin supérieur droit
+            timerRect.anchorMax = new Vector2(1f, 1f);
+            timerRect.pivot = new Vector2(1f, 1f);
+
+            NewTimerObject = timerInstance.GetComponent<TimerBar>();
+            NewTimerObject.ParentScript = this;
+            NewTimerObject.duration = CardData.cards[CardNumber].TimerTime;
+            TimerStarted = true;
+        }
+        else
+        {
+            if(NewTimerObject != null)
+            {
+                NewTimerObject.isRunning = false;
+            }
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class TimerBar : MonoBehaviour
 {
@@ -11,13 +12,18 @@ public class TimerBar : MonoBehaviour
     public TextMeshProUGUI timerText;   // Texte TMP pour afficher le temps
 
     private float currentTime;
-    private bool isRunning = false;
+    public bool isRunning = false;
 
     public CardInfoMaj ParentScript;
 
     private void Start()
     {
-        StartTimer(); // Démarre automatiquement, ou appelle-le ailleurs
+        StartCoroutine(WaitOneSec());
+    }
+    IEnumerator WaitOneSec()
+    {
+        yield return new WaitForSeconds(1f);
+        StartTimer();
     }
 
     public void StartTimer()

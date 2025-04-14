@@ -11,8 +11,12 @@ public class GoogleSheetImporter : MonoBehaviour
 {
     private string sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd7-nhE-of6k5lJpjj_V85bNFmXq_yJf0FJADRYhZN8y2YcDfb-4xffsyA5HXn8K7JTsyxR5NSCGw7/pub?gid=0&single=true&output=tsv";
     public List<List<string>> tableData = new List<List<string>>();
-    private string baseURL = "https://raw.githubusercontent.com/Elouannn/Pharaoh-s-Frog/main/ImagesCartes/"; // URL de ton dossier Git
+
     public List<Texture2D> images = new List<Texture2D>(); // Liste pour stocker les images
+
+    public string googleDriveFileId; // ID du fichier Google Drive
+
+
 
     public List<CardConfig> cards;
 
@@ -32,8 +36,11 @@ public class GoogleSheetImporter : MonoBehaviour
     public bool SeeFootSteps = false;
     public GameObject RefFootsteps;
 
+    public GameObject Header;
+
     public void Start()
     {
+        
         StartCoroutine(DownloadSheet());
     }
     IEnumerator DownloadSheet()
@@ -96,51 +103,39 @@ public class GoogleSheetImporter : MonoBehaviour
             card.Choix_4 = row[13];
             int.TryParse(row[14], out card.Connexion_4);
             card.Consequence_4 = row[15];
+
+
+
             int.TryParse(row[17], out card.Progress);
             int.TryParse(row[18], out card.HpModifier);
             card.Footspteps = row[19];
             card.EventBind = row[20];
+            int.TryParse(row[21], out card.TimerTime);
 
 
 
             cards.Add(card);
         }
-        StartCoroutine(DownloadImages());
+        
         
     }
     IEnumerator DownloadImages()
     {
-        int i = 0;
+        string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
 
-        // Télécharge tant qu'il existe des images avec les noms '1.png', '2.png', '3.png', etc.
-        while (true)
+        // Vérifier si la requête a réussi
+        if (www.result != UnityWebRequest.Result.Success)
         {
-            string imageUrl = baseURL + i + ".jpg"; // URL de l'image (changer l'extension si nécessaire)
-            UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
-
-            // Envoyer la requête
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                // Si l'image est téléchargée avec succès, l'ajouter à la liste
-                Texture2D texture = DownloadHandlerTexture.GetContent(request);
-                images.Add(texture);
-                Debug.Log($"Image {i} téléchargée avec succès.");
-            }
-            else
-            {
-                // Si l'image n'existe pas (erreur 404 ou autre), on arrête la boucle
-                Debug.Log($"Aucune image trouvée à {imageUrl}. Fin du téléchargement.");
-                break;
-            }
-
-            i++; // Passer à l'image suivante
+            Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
         }
-
-        CardSpawner.CreateCard(0);
+        else
+        {
+            // Télécharger la texture et l'assigner à l'image cible
+            Texture2D texture = DownloadHandlerTexture.GetContent(www);
+        }
     }
-
 }
 
 [Serializable]
@@ -167,4 +162,8 @@ public class CardConfig : ScriptableObject
     public int HpModifier;
     public string Footspteps;
     public string EventBind;
+    public int TimerTime;
 }
+
+
+
