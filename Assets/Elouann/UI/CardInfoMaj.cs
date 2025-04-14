@@ -20,7 +20,7 @@ public class CardInfoMaj : MonoBehaviour
     private List<SpriteRenderer> AllArrows = new List<SpriteRenderer>();
     private SpriteRenderer SelectedArrow;
     public GoogleSheetImporter CardData;
-    private int CardNumber;
+    public int CardNumber;
     public MajCard majCard;
     public TMP_Text GoNextText;
     public Texture2D BackgroundTexture;
@@ -33,6 +33,40 @@ public class CardInfoMaj : MonoBehaviour
     public bool lockUI = false;
     public Animator animator;
     public AnimationClip customAppearClip;
+
+    float elapsed = 0f;
+    float x;
+    
+    float y;
+
+    public List<Image> hearts = new List<Image>();
+
+    private Dictionary<string, Action> eventActions;
+
+    public GameObject TimerObject;
+
+    private void Start()
+    {
+        eventActions = new Dictionary<string, Action>
+        {
+            { "UnlockFootprints", UnlockFootprints },
+            { "Timer", Timer }
+        };
+    }
+
+    public void PlayEvent(string eventName)
+    {
+        if (eventActions.TryGetValue(eventName, out Action action))
+        {
+            action.Invoke();
+        }
+        else
+        {
+            Debug.LogWarning($"Événement '{eventName}' non reconnu !");
+        }
+    }
+
+   
 
     public void FakeStart()
     {
@@ -73,6 +107,9 @@ public class CardInfoMaj : MonoBehaviour
         {
             card.color = LowColor;
         }
+        hearts.Add(CardData.Heart3);
+        hearts.Add(CardData.Heart2);
+        hearts.Add(CardData.Heart1);
     }
    
     public void DownloadDatas(int i,GoogleSheetImporter DataBase, MajCard majcard)
@@ -80,20 +117,31 @@ public class CardInfoMaj : MonoBehaviour
         CardData = DataBase;
         majCard = majcard;
         CardNumber = i;
-        BackgroundTexture = CardData.images[CardNumber];
+        //BackgroundTexture = CardData.images[CardNumber];
         FakeStart();
         StartCoroutine(EnterCard());
-        
-        
     }
     IEnumerator EnterCard()
     {
         yield return new WaitForSeconds(1);
-        SpawnText(CardData.cards[CardNumber].Titre, Titre, () => SpawnText(CardData.cards[CardNumber].description, Description, () => DoLockUI(false)));
+        StartCoroutine(MajProgression(CardData.cards[CardNumber].Progress));
+        if (CardData.cards[CardNumber].EventBind != "")
+        {
+            PlayEvent(CardData.cards[CardNumber].EventBind);
+        }
+        if (CardData.SeeFootSteps == true & CardData.cards[CardNumber].Footspteps !="None")
+        {
+
+            print(CardData.SeeFootSteps);
+            Instantiate(CardData.RefFootsteps,transform.GetChild(0));
+        }
+
+        SpawnText(CardData.cards[CardNumber].Titre, CardData.Titre, () => SpawnText(CardData.cards[CardNumber].description, Description, () => DoLockUI(false)));
     }
     public void DoLockUI(bool boolean)
     {
         lockUI = boolean;
+        LoseHp(CardData.cards[CardNumber].HpModifier);
     }
     public void SelectSide(int i)
     {
@@ -106,7 +154,11 @@ public class CardInfoMaj : MonoBehaviour
                 {
                     
                     CancelSetText();
-                    card.color = LowColor;
+                    //card.color = LowColor;
+                    if(SelectedSide !=4)
+                    {
+                        AllArrows[SelectedSide].transform.gameObject.GetComponent<Animator>().SetTrigger("Desappear");
+                    }
                     Choix.text = "";
                     SelectedSide = 4;
                 }
@@ -116,10 +168,10 @@ public class CardInfoMaj : MonoBehaviour
                 CancelSetText();
                 Choix.text = "";
 
-                SelectedSide = i;
-                if (AllArrows.Count > SelectedSide)
+                if (AllArrows.Count > i)
                 {
 
+                    SelectedSide = i;
                     foreach (var card in AllArrows)
                     {
                         if (card != AllArrows[i] && card.color.a > 0.3f)
@@ -133,6 +185,10 @@ public class CardInfoMaj : MonoBehaviour
                     var fieldInfo = CardData.cards[CardNumber].GetType().GetField(TempString);
                     string TempText = fieldInfo.GetValue(CardData.cards[CardNumber])?.ToString();
                     SpawnText(TempText, Choix, null); 
+                }
+                else
+                {
+                    SelectSide(4);
                 }
             }  
         }        
@@ -245,6 +301,91 @@ public class CardInfoMaj : MonoBehaviour
         StopAllCoroutines();
         textComponent.text = fullText;
         isTyping = false;
+    }
+
+
+    IEnumerator MajProgression(int target)
+    {
+        x = CardData.progressBar.fillAmount;
+        y = (float)target/100;
+        elapsed = 0f;
+        while (elapsed < 1)
+        {
+            elapsed += Time.deltaTime;
+            CardData.progressBar.fillAmount = Mathf.Lerp(x, y, elapsed / 1);
+            yield return null;
+
+        }
+    }
+
+    public void LoseHp(int i)
+    {
+        bool tempFull = false;
+        if (i < 0)
+        {
+            for (int x = 0; x < -i; x++)
+            {
+                foreach (Image heart in hearts)
+                {
+                    if (heart.sprite == CardData.SpriteHeartFull)
+                    {
+                        heart.sprite = CardData.SpriteHeartEmpty;
+                        heart.GetComponent<Animator>().enabled = false;
+                        tempFull = false;
+                        break;
+                    }
+                    else
+                    {
+                        tempFull = true;
+                    }
+                }
+                if (tempFull)
+                {
+                    Die();
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int x = 0; x < i; x++)
+            {
+                foreach (Image heart in hearts)
+                {
+                    if (heart.sprite == CardData.SpriteHeartEmpty)
+                    {
+                        heart.sprite = CardData.SpriteHeartFull;
+                        heart.GetComponent<Animator>().enabled = true;
+                        tempFull = false;
+                        break;
+                    }
+                    else
+                    {
+                        tempFull = true;
+                    }
+                }
+                if(tempFull)
+                {
+                    break;
+                }
+            }
+        }
+        
+    }
+    public void Die()
+    {
+        print("Game Over");
+    }
+
+    // All special events
+    public void UnlockFootprints()
+    {
+        CardData.SeeFootSteps = true;
+    }
+    public void Timer()
+    {
+        //TimerBar NewTimerObject = Instantiate(TimerObject,transform).GetComponent<TimerBar>();
+        //NewTimerObject.ParentScript = this;
     }
 
 }

@@ -8,8 +8,9 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
     private bool isDragging = false;
     private Vector2 targetPosition;
     public float snapSpeed = 5f; // Vitesse du retour au centre
-    public float maxRadius = 80f; // Rayon maximum du déplacement
+    private float maxRadius = 50f; // Rayon maximum du déplacement
     public CardInfoMaj CardManager;
+    private float angle = 35f;
 
     private void Awake()
     {
@@ -51,24 +52,23 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
                 else
                 {
                 }
-
                 //Si c'est à gauche
-                if (newPosition.x < -45 & newPosition.y > -45 & newPosition.y < 45)
+                if (newPosition.x < -angle & newPosition.y > -angle & newPosition.y < angle)
                 {
                     CardManager.SelectSide(0);
                 }
                 //Si c'est à droite
-                else if (newPosition.x > 45 & newPosition.y > -45 & newPosition.y < 45)
+                else if (newPosition.x > angle & newPosition.y > -angle & newPosition.y < angle)
                 {
                     CardManager.SelectSide(1);
                 }
                 //Si c'est en haut
-                else if (newPosition.x > -45 & newPosition.x < 45 & newPosition.y > 45)
+                else if (newPosition.x > -angle & newPosition.x < angle & newPosition.y > angle)
                 {
                     CardManager.SelectSide(2);
                 }
                 //Si c'est en bas
-                else if (newPosition.x > -45 & newPosition.x < 45 & newPosition.y < -45)
+                else if (newPosition.x > -angle & newPosition.x < angle & newPosition.y < -angle)
                 {
                     CardManager.SelectSide(3);
                 }

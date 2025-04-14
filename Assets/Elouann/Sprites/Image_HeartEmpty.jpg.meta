@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c03248a8e69060c46a1494c7a64c885d
+guid: b1d12b14f4eecc840a993a41e7558722
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3202499449516869127
-    second: I_DonjonTest_0
+      213: -3681916169137024360
+    second: Image_HeartEmpty_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -97,7 +97,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -110,7 +110,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: I_DonjonTest_0
+      name: Image_HeartEmpty_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1080
-        height: 1920
+        width: 735
+        height: 594
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 70646d12840917c20800000000000000
-      internalID: 3202499449516869127
+      spriteID: 89212d570c437ecc0800000000000000
+      internalID: -3681916169137024360
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      I_DonjonTest_0: 3202499449516869127
+      Image_HeartEmpty_0: -3681916169137024360
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

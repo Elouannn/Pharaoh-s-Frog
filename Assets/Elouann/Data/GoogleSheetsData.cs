@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+using TMPro;
 
 
 public class GoogleSheetImporter : MonoBehaviour
@@ -15,6 +17,20 @@ public class GoogleSheetImporter : MonoBehaviour
     public List<CardConfig> cards;
 
     public MajCard CardSpawner;
+
+    public Image progressBar;
+
+    public Canvas canvasParent;
+
+    public TMP_Text Titre;
+    public Sprite SpriteHeartFull;
+    public Sprite SpriteHeartEmpty;
+    public Image Heart1;
+    public Image Heart2;
+    public Image Heart3;
+
+    public bool SeeFootSteps = false;
+    public GameObject RefFootsteps;
 
     public void Start()
     {
@@ -80,7 +96,12 @@ public class GoogleSheetImporter : MonoBehaviour
             card.Choix_4 = row[13];
             int.TryParse(row[14], out card.Connexion_4);
             card.Consequence_4 = row[15];
-            
+            int.TryParse(row[17], out card.Progress);
+            int.TryParse(row[18], out card.HpModifier);
+            card.Footspteps = row[19];
+            card.EventBind = row[20];
+
+
 
             cards.Add(card);
         }
@@ -142,4 +163,8 @@ public class CardConfig : ScriptableObject
     public int Connexion_4;
     public string Consequence_4;
     public Texture2D Image;
+    public int Progress;
+    public int HpModifier;
+    public string Footspteps;
+    public string EventBind;
 }
