@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Collections;
+using UnityEngine.Networking;
 
 public class CardInfoMaj : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class CardInfoMaj : MonoBehaviour
     public MajCard majCard;
     public TMP_Text GoNextText;
     public Texture2D BackgroundTexture;
+    public Image BackgroundImage;
 
     private int NextCardIS = 0;
 
@@ -116,15 +118,43 @@ public class CardInfoMaj : MonoBehaviour
         hearts.Add(CardData.Heart2);
         hearts.Add(CardData.Heart1);
     }
-   
-    public void DownloadDatas(int i,GoogleSheetImporter DataBase, MajCard majcard)
+    public void FirstDownloadDatas(int i, GoogleSheetImporter DataBase, MajCard majcard)
+    {
+        StartCoroutine(DownloadDatas(i,DataBase,majcard));
+    }
+    IEnumerator DownloadDatas(int i,GoogleSheetImporter DataBase, MajCard majcard)
     {
         CardData = DataBase;
         majCard = majcard;
         CardNumber = i;
-        //BackgroundTexture = CardData.images[CardNumber];
+        string googleDriveFileId = CardData.cards[CardNumber].DriveField;
+        string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
+        print(url);
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
+        }
+        else
+        {
+            // Télécharger la texture et l'assigner à l'image cible
+            BackgroundTexture = DownloadHandlerTexture.GetContent(www);
+
+            Rect rect = new Rect(0, 0, BackgroundTexture.width, BackgroundTexture.height);
+            Vector2 pivot = new Vector2(0.5f, 0.5f);
+
+            Sprite sprite = Sprite.Create(BackgroundTexture, rect, pivot);
+            BackgroundImage.sprite = sprite;
+        }
+        GetComponent<Animator>().SetTrigger("Cardin");
         FakeStart();
         StartCoroutine(EnterCard());
+    }
+    IEnumerator WaitASec()
+    {
+        yield return new WaitForSeconds(1f);
+        
     }
     IEnumerator EnterCard()
     {

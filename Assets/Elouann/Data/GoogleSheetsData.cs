@@ -103,39 +103,21 @@ public class GoogleSheetImporter : MonoBehaviour
             card.Choix_4 = row[13];
             int.TryParse(row[14], out card.Connexion_4);
             card.Consequence_4 = row[15];
-
-
-
+            card.DriveField  = row[16];
             int.TryParse(row[17], out card.Progress);
             int.TryParse(row[18], out card.HpModifier);
             card.Footspteps = row[19];
             card.EventBind = row[20];
             int.TryParse(row[21], out card.TimerTime);
 
-
+            
 
             cards.Add(card);
         }
-        
+        CardSpawner.CreateCard(0);
         
     }
-    IEnumerator DownloadImages()
-    {
-        string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
-        yield return www.SendWebRequest();
-
-        // Vérifier si la requête a réussi
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
-        }
-        else
-        {
-            // Télécharger la texture et l'assigner à l'image cible
-            Texture2D texture = DownloadHandlerTexture.GetContent(www);
-        }
-    }
+    
 }
 
 [Serializable]
@@ -157,6 +139,7 @@ public class CardConfig : ScriptableObject
     public string Choix_4;
     public int Connexion_4;
     public string Consequence_4;
+    public string DriveField;
     public Texture2D Image;
     public int Progress;
     public int HpModifier;

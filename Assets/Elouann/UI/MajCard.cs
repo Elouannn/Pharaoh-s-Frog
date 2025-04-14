@@ -11,8 +11,9 @@ public class MajCard : MonoBehaviour
 
     public void CreateCard(int i)
     {
+
         NewCard = Instantiate(Cardref) ;
-        NewCard.GetComponent<Animator>().SetTrigger("Cardin");
-        NewCard.GetComponent<CardInfoMaj>().DownloadDatas(i,DataBase,this);
+        
+        NewCard.GetComponent<CardInfoMaj>().FirstDownloadDatas(i,DataBase,this);
     }
 }

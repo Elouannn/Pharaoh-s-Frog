@@ -1008,7 +1008,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -7, y: -7}
   m_SizeDelta: {x: 465.54358, y: 651.5216}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6073162090322226113
@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &4903538943790087571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1099,12 +1099,15 @@ MonoBehaviour:
   majCard: {fileID: 0}
   GoNextText: {fileID: 6199909403813783513}
   BackgroundTexture: {fileID: 0}
+  BackgroundImage: {fileID: 3821308390203472194}
   SelectedSide: 4
   lockUI: 0
   animator: {fileID: 0}
   customAppearClip: {fileID: 0}
   hearts: []
   TimerObject: {fileID: 8543832241951266086, guid: 2519d6b9b85bfba4dbf166362d468461, type: 3}
+  timerInstance: {fileID: 0}
+  NewTimerObject: {fileID: 0}
   once: 0
   textComponent: {fileID: 0}
   typingSpeed: 0.05
