@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEditor.MemoryProfiler;
 
 public class CardInfoMaj : MonoBehaviour
 {
@@ -127,25 +128,32 @@ public class CardInfoMaj : MonoBehaviour
         CardData = DataBase;
         majCard = majcard;
         CardNumber = i;
-        string googleDriveFileId = CardData.cards[CardNumber].DriveField;
-        string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
-        yield return www.SendWebRequest();
-        print(url);
-        if (www.result != UnityWebRequest.Result.Success)
+        if (CardData.NextSprite == null)
         {
-            Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
+            string googleDriveFileId = CardData.cards[CardNumber].DriveField;
+            string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
+            }
+            else
+            {
+                // Télécharger la texture et l'assigner à l'image cible
+                BackgroundTexture = DownloadHandlerTexture.GetContent(www);
+
+                Rect rect = new Rect(0, 0, BackgroundTexture.width, BackgroundTexture.height);
+                Vector2 pivot = new Vector2(0.5f, 0.5f);
+
+                Sprite sprite = Sprite.Create(BackgroundTexture, rect, pivot);
+                BackgroundImage.sprite = sprite;
+            }
         }
         else
         {
-            // Télécharger la texture et l'assigner à l'image cible
-            BackgroundTexture = DownloadHandlerTexture.GetContent(www);
-
-            Rect rect = new Rect(0, 0, BackgroundTexture.width, BackgroundTexture.height);
-            Vector2 pivot = new Vector2(0.5f, 0.5f);
-
-            Sprite sprite = Sprite.Create(BackgroundTexture, rect, pivot);
-            BackgroundImage.sprite = sprite;
+            BackgroundImage.sprite = CardData.NextSprite;
+            CardData.NextSprite = null;
         }
         GetComponent<Animator>().SetTrigger("Cardin");
         FakeStart();
@@ -167,7 +175,6 @@ public class CardInfoMaj : MonoBehaviour
         if (CardData.SeeFootSteps == true & CardData.cards[CardNumber].Footspteps !="None")
         {
 
-            print(CardData.SeeFootSteps);
             Instantiate(CardData.RefFootsteps,transform.GetChild(0));
         }
 
@@ -177,6 +184,7 @@ public class CardInfoMaj : MonoBehaviour
     {
         lockUI = boolean;
         LoseHp(CardData.cards[CardNumber].HpModifier);
+        GoNextText.text = "Drag to choose";
     }
     public void SelectSide(int i)
     {
@@ -247,8 +255,39 @@ public class CardInfoMaj : MonoBehaviour
             {
                 Timer();
             }
+
         }
+        StartCoroutine(LoadNextImage());
         SpawnText(temptext, Consequence, () => EndLetGoDrag());
+    }
+    public IEnumerator LoadNextImage()
+    {
+        string TempStringBis = "Connexion_" + (SelectedSide + 1);
+        var fieldInfoBis = CardData.cards[CardNumber].GetType().GetField(TempStringBis);
+        string connexion = fieldInfoBis.GetValue(CardData.cards[CardNumber])?.ToString();
+
+        int connexionInt = int.Parse(connexion); 
+
+        string googleDriveFileId = CardData.cards[connexionInt].DriveField;
+        string url = $"https://drive.google.com/uc?export=download&id={googleDriveFileId}";
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Erreur lors du téléchargement de l'image : " + www.error);
+        }
+        else
+        {
+            // Télécharger la texture et l'assigner à l'image cible
+            BackgroundTexture = DownloadHandlerTexture.GetContent(www);
+
+            Rect rect = new Rect(0, 0, BackgroundTexture.width, BackgroundTexture.height);
+            Vector2 pivot = new Vector2(0.5f, 0.5f);
+
+            Sprite sprite = Sprite.Create(BackgroundTexture, rect, pivot);
+
+            CardData.NextSprite = sprite;
+        }
     }
     public void EndLetGoDrag()
     {
@@ -260,15 +299,21 @@ public class CardInfoMaj : MonoBehaviour
             string TempStringBis = "Connexion_" + (SelectedSide + 1);
             var fieldInfoBis = CardData.cards[CardNumber].GetType().GetField(TempStringBis);
             string connexion = fieldInfoBis.GetValue(CardData.cards[CardNumber])?.ToString();
-            
+
             int connexionInt = int.Parse(connexion);
+
+            
+            
             StartCoroutine(Wait2Sec(connexionInt, () => RdyForNextCard()));
         }
     }
     IEnumerator Wait2Sec(int i, Action onComplete)
     {
         NextCardIS = i;
-        yield return new WaitForSeconds(1);
+        while (CardData.NextSprite == null) yield return null;
+        
+        print("Next sprite is" + CardData.NextSprite.name);
+        
         onComplete?.Invoke();
     }
 

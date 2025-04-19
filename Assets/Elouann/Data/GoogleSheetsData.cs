@@ -38,6 +38,8 @@ public class GoogleSheetImporter : MonoBehaviour
 
     public GameObject Header;
 
+    public Sprite NextSprite;
+
     public void Start()
     {
         
@@ -110,11 +112,8 @@ public class GoogleSheetImporter : MonoBehaviour
             card.EventBind = row[20];
             int.TryParse(row[21], out card.TimerTime);
 
-            
-
             cards.Add(card);
         }
-        CardSpawner.CreateCard(0);
         
     }
     
